@@ -38,21 +38,25 @@ public:
     VectorT<nTYPE>& operator=(const nTYPE& valueRHS);
     VectorT<nTYPE>& operator=(const nTYPE* arrRHS);
     VectorT<nTYPE>& operator=(const VectorT<nTYPE>& vecRHS);
-    /*@{*/
 
     /** \name addition operators */
-    /*@{*/
-    VectorT<nTYPE>& operator+=(const nTYPE& value); /**< add value to all elements */
-//    VectorT<nTYPE>& operator+=(const nTYPE* pRHS);  /**< element-by-element addition with pRHS (without range checking). */
-//    VectorT<nTYPE>& operator+=(const VectorT& RHS); /**< element-by-element addition with RHS */
-    /*@}*/
+    VectorT<nTYPE>& operator+=(const nTYPE& value);              /**< add value to all elements */
+    VectorT<nTYPE>& operator+=(const nTYPE* arrRHS);             /**< element-by-element addition with pRHS (without range checking). */
+    VectorT<nTYPE>& operator+=(const VectorT<nTYPE>& RHS);       /**< element-by-element addition with RHS */
 
+    /** \name substraction operators */
+    VectorT<nTYPE>& operator-=(const nTYPE& value);              /**< add value to all elements */
+    VectorT<nTYPE>& operator-=(const nTYPE* arrRHS);             /**< element-by-element addition with pRHS (without range checking). */
+    VectorT<nTYPE>& operator-=(const VectorT<nTYPE>& RHS);       /**< element-by-element addition with RHS */
+    /*@}*/
 
     /* Adding element-by-element with given vector */
     void Add(VectorT& vec);
 
     /* Adding a hopefully smaller array to the base array with a starting row number */
-    void AddArray(VectorT& arr, int row);
+    void AddArray(VectorT<nTYPE>& vec, int row);
+    void AddArray(VectorT<nTYPE>& vec, int start_row, int end_row);
+
 
     /* Scaling the vector */
     void SetToScaled(const nTYPE& scale);
@@ -79,26 +83,23 @@ template <class nTYPE>
 inline VectorT<nTYPE>::VectorT(const VectorT& source): ArrayT<nTYPE>(source) { }
 
 /* Operators definitions */
+/* Assignment operations */
 template<class nTYPE>
 inline VectorT<nTYPE>& VectorT<nTYPE>::operator=(const nTYPE& valueRHS) {
 
     /* Inherited */
     ArrayT<nTYPE>::operator=(valueRHS);
+
     return *this;
 }
 
 template<class nTYPE>
 inline VectorT<nTYPE>& VectorT<nTYPE>::operator=(const nTYPE* arrRHS) {
 
-    /* First finding the length of given array */
-    int arrayLength = (sizeof(*arrRHS) / sizeof(arrRHS)) + 1;    // proper way of getting the length of an array
+    /* Inherited */
+    ArrayT<nTYPE>::operator=(arrRHS);
 
-    /* Check the length */
-    assert(this->fLength == arrayLength);
-
-    for (int i = 0; i < arrayLength; i++){
-        this->fArray[i] = arrRHS[i];
-    }
+    return *this;
 
 }
 
@@ -111,27 +112,73 @@ inline VectorT<nTYPE> &VectorT<nTYPE>::operator=(const VectorT<nTYPE> &vecRHS) {
     return *this;
 }
 
+/* Addition operations */
 template<class nTYPE>
 VectorT<nTYPE>& VectorT<nTYPE>::operator+=(const nTYPE& valueRHS) {
 
     nTYPE* ptrTemp_ = this->Pointer();
+
     for (int i = 0; i < this->fLength; i++){
         *ptrTemp_++ += valueRHS;
     }
+
     return *this;
 }
 
-//template<class nTYPE>
-//VectorT<nTYPE>& VectorT<nTYPE>::operator+=(const nTYPE* arrRHS) {
-//    return <#initializer#>;
-//}
-//
-//template<class nTYPE>
-//VectorT<nTYPE>& VectorT<nTYPE>::operator+=(const VectorT& vRHS) {
-//    return <#initializer#>;
-//}
+template<class nTYPE>
+VectorT<nTYPE>& VectorT<nTYPE>::operator+=(const nTYPE* arrRHS) {
 
-/* Scaling all of the elements to a given scale value */
+    for (int i = 0; i < this->fLength; i++) {
+        this->fArray[i] += arrRHS[i];
+    }
+
+    return *this;
+}
+
+template<class nTYPE>
+VectorT<nTYPE>& VectorT<nTYPE>::operator+=(const VectorT& vRHS) {
+
+    for (int i = 0; i < this->fLength; i++) {
+        this->fArray[i] += vRHS[i];
+    }
+
+    return *this;
+}
+
+/* Subtraction operations */
+template<class nTYPE>
+VectorT<nTYPE>& VectorT<nTYPE>::operator-=(const nTYPE& valueRHS) {
+
+    nTYPE* ptrTemp_ = this->Pointer();
+
+    for (int i = 0; i < this->fLength; i++){
+        *ptrTemp_++ -= valueRHS;
+    }
+
+    return *this;
+}
+
+template<class nTYPE>
+VectorT<nTYPE>& VectorT<nTYPE>::operator-=(const nTYPE* arrRHS) {
+
+    for (int i = 0; i < this->fLength; i++) {
+        this->fArray[i] -= arrRHS[i];
+    }
+
+    return *this;
+}
+
+template<class nTYPE>
+VectorT<nTYPE>& VectorT<nTYPE>::operator-=(const VectorT& vRHS) {
+
+    for (int i = 0; i < this->fLength; i++) {
+        this->fArray[i] -= vRHS[i];
+    }
+
+    return *this;
+}
+
+/* Multiplying all of the elements by a given scale value */
 template <class nTYPE>
 void VectorT<nTYPE>::SetToScaled(const nTYPE& scale) {
 
@@ -140,16 +187,29 @@ void VectorT<nTYPE>::SetToScaled(const nTYPE& scale) {
     }
 }
 
-/* Adding a sub vector from a offset row number */
+/* Adding a sub vector from an offset row number */
 template <class nTYPE>
-void VectorT<nTYPE>::AddArray(VectorT &arr, int row) {
+void VectorT<nTYPE>::AddArray(VectorT &vec, int row) {
 
     /* Check the length doesn't exceed the original vector */
-    assert(arr.Length() < this->fLength - row);
+    assert(vec.Length() < this->fLength - row);
 
     int j = 0;
-    for (int i = row; i < arr.Length(); i++) {
-        this->fArray[i] += arr[j];
+    for (int i = row; i < vec.Length(); i++) {
+        this->fArray[i] += vec[j];
+        j++;
+    }
+}
+
+template <class nTYPE>
+void VectorT<nTYPE>::AddArray(VectorT &vec, int start_row, int end_row) {
+
+    /* Check the length doesn't exceed the original vector */
+    assert(vec.Length() >= (start_row - end_row + 1));
+
+    int j = 0;
+    for (int i = start_row; i < end_row; i++) {
+        this->fArray[i] += vec[j];
         j++;
     }
 }

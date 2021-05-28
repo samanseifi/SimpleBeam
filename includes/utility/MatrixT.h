@@ -49,11 +49,26 @@ public:
     MatrixT<nTYPE>& operator=(const MatrixT<nTYPE>& matRHS);
     /*@}*/
 
+    /** Determinent of the Matrix */
+
+
+    /** Matrix inversion */
+
     /** Set the dimension of the square matrix */
     void Dimension(int squareMatSize);
 
     /** Set the dimension matrix */
     void Dimension(int numRows, int numCols);
+
+    /** Get number of rows */
+    int Rows() const {
+        return fRows;
+    };
+
+    /** Get number of cols */
+    int Cols() const {
+        return fCols;
+    };
 
     /** Printing the matrix */
     void Print() {
@@ -150,5 +165,12 @@ inline MatrixT<nTYPE>& MatrixT<nTYPE>::operator=(const MatrixT<nTYPE>& matRHS) {
 
     return (*this);
 }
+
+
+
+
+
+
+
 
 #endif //SIMPLEBEAM_MATRIXT_H

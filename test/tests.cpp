@@ -45,29 +45,6 @@ BOOST_AUTO_TEST_SUITE(my_testsuite)
         BOOST_TEST (v2.x == 4.0);
         BOOST_TEST (v2.y == 6.0);
     }
-
-    BOOST_AUTO_TEST_CASE(large_vector_summation)
-    {
-        dArrayT V1(5);
-        dArrayT V2(5);
-        dArrayT V3(5);
-        for (int i = 0; i < V1.Length(); i++) {
-            V1[i] = i;
-            V2[i] = i-1;
-            V3[i] = i+1;
-        }
-        V1.AddArray(V2);
-        BOOST_TEST (V1[2] == 3);
-        BOOST_TEST (V1[0] == -1);
-
-        dArrayT V4(3);
-        for (int j = 0; j < V4.Length(); j++) {
-            V4[j] = j;
-        }
-        V3.AddArray(V4, 1);
-        BOOST_TEST (V3[0] == 1);
-        BOOST_TEST (V3[1] == 2);
-        BOOST_TEST (V3[2] == 4);
-    }
+    
 BOOST_AUTO_TEST_SUITE_END()
 

@@ -4,26 +4,27 @@
 
 using namespace std;
 
-/* Calculating total number of nodes with num. of nodes at each element Ne and number of elements L */
-int GetNumNodes(int Ne, int L) {
-    return (Ne - 1)*L + 1;
-}
-
 /* Assigning the weighting for numerical integration */
 void GetWeights(vector<double> &xi, vector<double> &w, int numIP);
 
+/** Functions creating the geometry and mesh information */
+/*@{*/
+/* Calculating total number of nodes with num. of nodes at each element Ne and number of elements L */
+int GetNumNodes(int Ne, int L);
+
 /* Building the array of initial nodal coordinates */
-void get_coords(ArrayT<double> &coords, double Length, double nnodes);
+void GetCoords(VectorT<double> &coords, double Length, double nnodes);
 
 /* Building the connectivity matrix */
-void get_connectivity(MatrixT<int> &connect, int Ne, int L);
+void GetConnectivity(MatrixT<int> &connect, int Ne, int L);
+/*@}*/
 
 
-int main()  {
+int main() {
 
-    /** \name Geometry: A simple bat with a given Length and cross section area = A  */
-    const double Length = 5.0;
-    const double A = 1.0;
+    /** \name Geometry: Area simple bat with a given beam_length and cross section area = Area  */
+    const double beam_length = 5.0;
+    const double Area = 1.0;
 
     /** \name Material properties
      *          mu: Shear modulus
@@ -32,127 +33,156 @@ int main()  {
     /*@{*/
     const double mu = 50.0;
     const double nu = 0.3;
-    const double cnst = 2.0*mu*A*(1-nu)/(1-2*nu);
-    /*@{*/
+    const double cnst = 2.0 * mu * Area * (1 - nu) / (1 - 2 * nu);
+    /*@}*/
 
-    /** Defining Loadings */
+    /** \name Defining Loadings */
     /*@{*/
     const double bodyforce = 10.0;
     const double traction = 2.0;
-    /*@{*/
+    /*@}*/
 
-    /** total no. elements, no. nodes on each element (2 for linear, 3 for quadratic elements) */
+    /** Total # of elements (nel) and # of nodes per element (2 for linear, 3 for quadratic elements) */
     /*@{*/
-    int L = 10;
-    int Ne = 3;
-    /*@{*/
+    int nel = 10;
+    int nnodes_per_el = 3;
+    /*@}*/
 
-    /** Get total number of nodes */
-    int nnodes = GetNumNodes(Ne, L);
+    /** Get total # of nodes */
+    int nnodes = GetNumNodes(nnodes_per_el, nel);
 
     /** Setting up the data structures for the mesh */
     /*@{*/
     /* 1) Building Vector of nodal coordinates */
-    VectorT<double> coords(nnodes);
-    get_coords(coords, Length, nnodes);
+    VectorT<double> vecCoords(nnodes);
+    GetCoords(vecCoords, beam_length, nnodes);
 
     /* 2) Building matrix of element connectivity (specifies node numbers on each element) */
-    MatrixT<int> connect(Ne, L);
-    get_connectivity(connect, Ne, L);
+    MatrixT<int> matConnect(nnodes_per_el, nel);
+    GetConnectivity(matConnect, nnodes_per_el, nel);
     /*@{*/
 
     /* Integration points and weights for 2 point integration */
     /*@{*/
-    int numIP = Ne - 1;
+    int numIP = nnodes_per_el - 1;
     vector<double> xi(2), w(2);
     GetWeights(xi, w, numIP);
     /*@{*/
 
     /* Assemble the global stiffness and force vector */
     MatrixT<double> K(nnodes);
-    ArrayT<double> F(nnodes);
+    VectorT<double> F(nnodes);
 
-    for (int lmn = 0; lmn < L; lmn++) {
-        //       Extract the coords of each node on the current element
-        MatrixT<double> kel(Ne, Ne);
-        ArrayT<double> fel(Ne);
-        ArrayT<double> lmncoords(Ne);
-        for (int a = 0; a < Ne; a++) {
-            lmncoords[a] = coords[connect(a, lmn)];
+    /* Loop over elements! */
+    for (int elem = 0; elem < nel; elem++) {
+
+        /* Extract the vecCoords of each node on the current element */
+        MatrixT<double> K_el;
+        K_el.Dimension(nnodes_per_el, nnodes_per_el);
+
+        VectorT<double> F_el;
+        F_el.Dimension(nnodes_per_el);
+
+        /* Extract nodal coordinates of each element */
+        VectorT<double> vecElemCoords;
+        vecElemCoords.Dimension(nnodes_per_el);
+
+        for (int a = 0; a < nnodes_per_el; a++) {
+            vecElemCoords[a] = vecCoords[matConnect(a, elem)];
         }
-        //      For the current element, loop over integration points and assemble element stiffness
 
+        /* Loop over number of integration points for the current element and assemble element stiffness!  */
         for (int II = 0; II < numIP; II++) {
-            //        Compute N and dN/dxi at the current integration point
-            ArrayT<double> N(Ne);
-            ArrayT<double> dNdxi(Ne);
-            if (Ne == 3) {
+
+            /* Compute shape functions and its derivatives: N and dN/dxi at the current integration point */
+            VectorT<double> N;
+            N.Dimension(nnodes_per_el);
+
+            VectorT<double> dNdxi;
+            dNdxi.Dimension(nnodes_per_el);
+
+            /* Element order = number of nodes - 1 */
+            if (nnodes_per_el == 3) {
                 N[0] = -0.5 * xi[II] * (1.0 - xi[II]);
-                N[1] = 0.5 * xi[II] * (1.0 + xi[II]);
-                N[2] = (1. - pow(xi[II], 2));
+                N[1] =  0.5 * xi[II] * (1.0 + xi[II]);
+                N[2] =  1.0 - pow(xi[II], 2);
                 dNdxi[0] = -0.5 + xi[II];
-                dNdxi[1] = 0.5 + xi[II];
-                dNdxi[2] = -2. * xi[II];
-            } else if (Ne == 2) {
-                N[0] = 0.5 * (1. - xi[II]);
-                N[1] = 0.5 * (1. + xi[II]);
+                dNdxi[1] =  0.5 + xi[II];
+                dNdxi[2] = -2.0 * xi[II];
+            } else if (nnodes_per_el == 2) {
+                N[0] = 0.5 * (1.0 - xi[II]);
+                N[1] = 0.5 * (1.0 + xi[II]);
                 dNdxi[0] = -0.5;
-                dNdxi[1] = 0.5;
+                dNdxi[1] =  0.5;
             }
-            //        Compute dx/dxi, J and dN/dx
+
+            /* Compute dx/dxi, J and dN/dx */
             double dxdxi = 0.0;
-            for (int a = 0; a < Ne; a++) {
-                dxdxi = dxdxi + dNdxi[a] * lmncoords[a];
+            for (int a = 0; a < nnodes_per_el; a++) {
+                dxdxi = dxdxi + dNdxi[a] * vecElemCoords[a];
             }
+            /* Calculate the Jacobian */
             double J = abs(dxdxi);
-            ArrayT<double> dNdx(Ne);
-            for (int a = 0; a < Ne; a++) {
+
+            VectorT<double> dNdx;
+            dNdx.Dimension(nnodes_per_el);
+            for (int a = 0; a < nnodes_per_el; a++) {
                 dNdx[a] = dNdxi[a] / dxdxi;
             }
-            //         Add contribution to element stiffness and force vector from current integration pt
-            for (int a = 0; a < Ne; a++) {
-                fel[a] = fel[a] + w[II] * bodyforce * J * N[a];
-                for (int b = 0; b < Ne; b++) {
-                    kel(a, b) = kel(a, b) + cnst * w[II] * J * dNdx[a] * dNdx[b];
+
+            /* Add contribution to element stiffness and force vector from current integration pt */
+            for (int a = 0; a < nnodes_per_el; a++) {
+                F_el[a] += w[II] * bodyforce * J * N[a];
+                for (int b = 0; b < nnodes_per_el; b++) {
+                    K_el(a, b) += cnst * w[II] * J * dNdx[a] * dNdx[b];
                 }
             }
         }
 
-        //         Add the stiffness and residual from the current element into global matrices
-        for (int a = 0; a < Ne; a++) {
-            int rw = connect(a, lmn);
-            F[rw] = F[rw] + fel[a];
-            for (int b = 0; b < Ne; b++) {
-                int cl = connect(b, lmn);
-                K(rw, cl) = K(rw, cl) + kel(a, b);
+        /* Add the stiffness and residual from the current element into global matrices */
+        for (int a = 0; a < nnodes_per_el; a++) {
+            int rw = matConnect(a, elem);
+            F[rw] += F_el[a];
+            for (int b = 0; b < nnodes_per_el; b++) {
+                int cl = matConnect(b, elem);
+                K(rw, cl) += K_el(a, b);
             }
         }
     }
 
-
-    //     Add the extra forcing term from the traction at x=L
+    /*  Add the extra forcing term from the traction at x=nel */
+    //TODO: It should be generalized to a set of nodes.
     F[nnodes-1] = F[nnodes-1] + traction;
 
-    //      Modify FEM equations to enforce displacement boundary condition
-    //      To do this we simply replace the equation for the first node with u=0
-
+    /**
+     * Modify FEM equations to enforce displacement boundary condition
+     * To do this we simply replace the equation for the first node with u=0
+     **/
+     //TODO: This also should be generalized to a set of nodes.
     for (int a = 0; a < nnodes; a++)
-        K(0,a) = 0.0;
+        K(0, a) = 0.0;
 
-    K(0,0) = 1.;
-    F[0] = 0.;
-
+    // K(0,0) = 1 means when it is multiplied by the
+    K(0, 0) = 1.0;
+    F[0] = 0.0;
     K.Print();
 
+
+
+    /* Solving the linear system */
+
+
+    //SolveLinear(sol, K, F);
 
     return 0;
 }
 
+/* Getting the weights for numerical integration */
 void GetWeights(vector<double> &xi, vector<double> &w, const int numIP) {
     if (numIP == 2) {
         w[0] = w[1] = 1.0;
         xi[0] = -0.5773502692;
-        xi[1] = 0.5773502692;
+        xi[1] =  0.5773502692;
     } else if (numIP == 1) {
         w[0] = 2.0;
         w[1] = 0.0;
@@ -160,12 +190,19 @@ void GetWeights(vector<double> &xi, vector<double> &w, const int numIP) {
     }
 }
 
-void get_coords(ArrayT<double> &coords, const double Length, const double nnodes) {
+/* Getting the number of nodes for L number of elements and Ne number of nodes per element */
+int GetNumNodes(int Ne, int L) {
+    return (Ne - 1)*L + 1;
+}
+
+/* Getting the vector of nodal coordinates */
+void GetCoords(VectorT<double> &coords, const double Length, const double nnodes) {
     for (int i = 0; i < nnodes; i++)
         coords[i] = Length*(i)/(nnodes-1);
 }
 
-void get_connectivity(MatrixT<int> &connect, const int Ne, const int L) {
+/* Connectivity matrix! */
+void GetConnectivity(MatrixT<int> &connect, const int Ne, const int L) {
     for (int lmn = 0; lmn < L; lmn++) {
         if (Ne == 3){
             /* 2n order element with 3 nodes: O----O----O */

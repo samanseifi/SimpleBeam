@@ -41,8 +41,7 @@ link_libraries(${SUNDIALS_LIBRARIES})
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
-add_executable(${BINARY_NAME} src/main.cpp includes/utility/ArrayT.h includes/utility/MatrixT.h includes/utility/VectorT.h includes/utility/Environment.h src/ElementT.cpp src/ElementT.h src/ShapeFunctionT.cpp src/ShapeFunctionT.h)
-#add_library(mesh_library STATIC src/Rope.cpp src/MassPoint.cpp src/MassPoint.h src/SpringElement.cpp src/SpringElement.h src/Point.cpp src/Point.h src/RopeManager.cpp src/RopeManager.h src/Rope.h)
+add_executable(${BINARY_NAME} src/main.cpp includes/utility/ArrayT.h includes/utility/MatrixT.h includes/utility/VectorT.h includes/utility/Environment.h)
 
 
 include_directories(includes/utility)

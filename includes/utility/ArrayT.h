@@ -55,6 +55,7 @@ public:
     /*@{*/
     /** Set all elements in the array to the given value */
     virtual ArrayT<TYPE>& operator=(const TYPE& valueRHS);
+    virtual ArrayT<TYPE>& operator=(const TYPE* ptrRHS);
     ArrayT<TYPE>& operator=(const ArrayT<TYPE>& arrRHS);
     /*@}*/
 
@@ -115,7 +116,7 @@ inline ArrayT<TYPE>::ArrayT(const ArrayT &source):
 
 /* Destructor */
 template <class TYPE>
-ArrayT<TYPE>::~ArrayT() {
+inline ArrayT<TYPE>::~ArrayT() {
 
     delete[] fArray;
 
@@ -124,7 +125,7 @@ ArrayT<TYPE>::~ArrayT() {
 }
 
 template <class TYPE>
-void ArrayT<TYPE>::Remove(int row_num) {
+inline void ArrayT<TYPE>::Remove(int row_num) {
 
     /* First check if the row exist */
     assert (row_num < fLength);
@@ -149,7 +150,7 @@ void ArrayT<TYPE>::Remove(int row_num) {
 }
 
 template <class TYPE>
-void ArrayT<TYPE>::Insert(TYPE value) {
+inline void ArrayT<TYPE>::Insert(TYPE value) {
 
     /* Copy the elements temporary to a temp array */
     TYPE *ptrTemp_ = new TYPE[fLength + 1];
@@ -188,7 +189,7 @@ inline const TYPE& ArrayT<TYPE>::operator[](int index) const {
 
 /* Assignments operators */
 template<class TYPE>
-inline ArrayT<TYPE> &ArrayT<TYPE>::operator=(const TYPE& valueRHS) {
+inline ArrayT<TYPE>& ArrayT<TYPE>::operator=(const TYPE& valueRHS) {
 
     TYPE* p = fArray;
     for (int i = 0; i < fLength; i++)
@@ -198,7 +199,24 @@ inline ArrayT<TYPE> &ArrayT<TYPE>::operator=(const TYPE& valueRHS) {
 }
 
 template<class TYPE>
-inline ArrayT<TYPE> &ArrayT<TYPE>::operator=(const ArrayT<TYPE>& arrRHS) {
+inline ArrayT<TYPE>& ArrayT<TYPE>::operator=(const TYPE* ptrRHS) {
+
+    /* Getting the size of the STL array */
+    int arrayLength = (sizeof(*ptrRHS) / sizeof(ptrRHS)) + 1;
+
+    /* if the dimensions are not match delete the LHS and create the ArrayT of the RHS size */
+    if (fLength != arrayLength) Dimension(arrayLength);
+
+    /* assign element-by-element */
+    for (int i = 0; i < fLength; i++) {
+        fArray[i] = ptrRHS[i];
+    }
+
+    return *this;
+}
+
+template<class TYPE>
+inline ArrayT<TYPE>& ArrayT<TYPE>::operator=(const ArrayT<TYPE>& arrRHS) {
 
     if (fArray != arrRHS.fArray) {
 
@@ -210,7 +228,7 @@ inline ArrayT<TYPE> &ArrayT<TYPE>::operator=(const ArrayT<TYPE>& arrRHS) {
             fArray[i] = arrRHS.fArray[i];
         }
     }
-    return (*this);
+    return *this;
 }
 
 template<class TYPE>
@@ -225,12 +243,12 @@ inline void ArrayT<TYPE>::Alias(int length, const TYPE* ptrArray) {
 }
 
 template <class TYPE>
-int ArrayT<TYPE>::Length() const {
+inline int ArrayT<TYPE>::Length() const {
     return this->fLength;
 }
 
 template<class TYPE>
-void ArrayT<TYPE>::Dimension(int length) {
+inline void ArrayT<TYPE>::Dimension(int length) {
 
     /* do nothing if the correct length is already assigned */
     if (length != fLength) {
@@ -254,20 +272,22 @@ void ArrayT<TYPE>::Dimension(int length) {
  * must be 0 <= offset <= Length() <--- one passed the end!
  */
 template<class TYPE>
-TYPE *ArrayT<TYPE>::Pointer(int offset) {
-    if (offset >= 0 || offset <= Length() ){
-        return fArray + offset;
-    } else {
+TYPE* ArrayT<TYPE>::Pointer(int offset) {
+    if (offset < 0 || offset > fLength){
         cout << "ERR: Offset must be within the length of the array.";
+        return nullptr;
+    } else {
+        return fArray + offset;
     }
 }
 
 template<class TYPE>
-const TYPE *ArrayT<TYPE>::Pointer(int offset) const {
-    if (offset >= 0 || offset <= Length() ){
-        return fArray + offset;
-    } else {
+const TYPE* ArrayT<TYPE>::Pointer(int offset) const {
+    if (offset < 0 || offset > fLength ){
         cout << "ERR: Offset must be within the length of the array.";
+        return nullptr;
+    } else {
+        return fArray + offset;
     }
 }
 
