@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../includes/utility/ArrayT.h
+vector
+-
+Environment.h
+../includes/utility/Environment.h
+
+../includes/utility/Environment.h
+cmath
+-
+cstring
+-
+iostream
+-
+iomanip
+-
+cstdlib
+-
+cassert
+-
+
+../includes/utility/MatrixT.h
+VectorT.h
+../includes/utility/VectorT.h
+
+../includes/utility/VectorT.h
+ArrayT.h
+../includes/utility/ArrayT.h
+
+/home/saman/CLionProjects/SimpleBeam++/src/main.cpp
+MatrixT.h
+/home/saman/CLionProjects/SimpleBeam++/src/MatrixT.h
+

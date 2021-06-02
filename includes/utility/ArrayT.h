@@ -53,7 +53,7 @@ public:
 
     /** Assignment operators */
     /*@{*/
-    /** Set all elements in the array to the given value */
+    virtual /** Set all elements in the array to the given value */
     virtual ArrayT<TYPE>& operator=(const TYPE& valueRHS);
     virtual ArrayT<TYPE>& operator=(const TYPE* ptrRHS);
     ArrayT<TYPE>& operator=(const ArrayT<TYPE>& arrRHS);

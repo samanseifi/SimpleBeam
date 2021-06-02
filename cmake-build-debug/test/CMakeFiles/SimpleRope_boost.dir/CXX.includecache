@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../includes/math/Vec.h
+iostream
+-
+vector
+-
+cmath
+-
+
+/home/saman/CLionProjects/BasicRope/test/tests.cpp
+boost/test/unit_test.hpp
+-
+Vec.h
+/home/saman/CLionProjects/BasicRope/test/Vec.h
+

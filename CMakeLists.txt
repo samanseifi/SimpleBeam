@@ -41,7 +41,7 @@ link_libraries(${SUNDIALS_LIBRARIES})
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
-add_executable(${BINARY_NAME} src/main.cpp includes/utility/ArrayT.h includes/utility/MatrixT.h includes/utility/VectorT.h includes/utility/Environment.h)
+add_executable(${BINARY_NAME} src/main.cpp includes/utility/ArrayT.h includes/utility/MatrixT.h includes/utility/VectorT.h includes/utility/Environment.h src/Mesh.cpp src/Mesh.h)
 
 
 include_directories(includes/utility)

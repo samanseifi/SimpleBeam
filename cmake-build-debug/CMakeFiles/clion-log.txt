@@ -1,0 +1,17 @@
+/snap/clion/152/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/saman/CLionProjects/SimpleBeam++
+-- Build type: Debug
+-- SUNDIALS_DIR=/home/saman/Apps/sundials-5.1.0/instdir
+-- Checking for TEST_LIB=sundials_nvecserial
+-- SUNDIALS_LIB=/home/saman/Apps/sundials-5.1.0/instdir/lib/libsundials_nvecserial.so
+-- Checking for TEST_LIB=sundials_ida
+-- SUNDIALS_LIB=/home/saman/Apps/sundials-5.1.0/instdir/lib/libsundials_ida.so
+-- Checking for TEST_LIB=sundials_kinsol
+-- SUNDIALS_LIB=/home/saman/Apps/sundials-5.1.0/instdir/lib/libsundials_kinsol.so
+-- CMAKE_FIND_LIBRARY_SUFFIXES=.so;.a
+-- SUNDIALS_FOUND=YES
+-- SUNDIALS_LIBRARY_DIR=/home/saman/Apps/sundials-5.1.0/instdir/lib
+-- SUNDIALS_INCLUDE_DIR=/home/saman/Apps/sundials-5.1.0/instdir/include
+-- SUNDIALS_LIBRARIES=sundials_nvecserial;sundials_ida;sundials_kinsol
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/saman/CLionProjects/SimpleBeam++/cmake-build-debug

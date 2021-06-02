@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="SimpleRope"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\cmake\;CMake Files\test\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Boost-1.71.0\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\boost_headers-1.71.0\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\boost_unit_test_framework-1.71.0\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Continuous">
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 Continuous"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="SimpleRope">
+				<Option output="/home/saman/CLionProjects/BasicRope/bin/SimpleRope" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/saman/Apps/sundials-5.1.0/instdir/include"/>
+					<Add directory="/home/saman/CLionProjects/BasicRope/includes/math"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 SimpleRope"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="SimpleRope/fast">
+				<Option output="/home/saman/CLionProjects/BasicRope/bin/SimpleRope" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/saman/Apps/sundials-5.1.0/instdir/include"/>
+					<Add directory="/home/saman/CLionProjects/BasicRope/includes/math"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 SimpleRope/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Nightly">
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 Nightly"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="test">
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 test"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="mesh_library">
+				<Option output="/home/saman/CLionProjects/BasicRope/cmake-build-release/libmesh_library.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/cmake-build-release"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/saman/Apps/sundials-5.1.0/instdir/include"/>
+					<Add directory="/home/saman/CLionProjects/BasicRope/includes/math"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 mesh_library"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="mesh_library/fast">
+				<Option output="/home/saman/CLionProjects/BasicRope/cmake-build-release/libmesh_library.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/cmake-build-release"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/saman/Apps/sundials-5.1.0/instdir/include"/>
+					<Add directory="/home/saman/CLionProjects/BasicRope/includes/math"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 mesh_library/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Experimental">
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 Experimental"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="SimpleRope_boost">
+				<Option output="/home/saman/CLionProjects/BasicRope/bin/SimpleRope_boost" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DBOOST_UNIT_TEST_FRAMEWORK_DYN_LINK"/>
+					<Add option="-DBOOST_ALL_NO_LIB"/>
+					<Add directory="/home/saman/Apps/sundials-5.1.0/instdir/include"/>
+					<Add directory="/home/saman/CLionProjects/BasicRope/includes/math"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/test/Makefile&quot;  VERBOSE=1 SimpleRope_boost"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="SimpleRope_boost/fast">
+				<Option output="/home/saman/CLionProjects/BasicRope/bin/SimpleRope_boost" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/saman/CLionProjects/BasicRope/bin"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DBOOST_UNIT_TEST_FRAMEWORK_DYN_LINK"/>
+					<Add option="-DBOOST_ALL_NO_LIB"/>
+					<Add directory="/home/saman/Apps/sundials-5.1.0/instdir/include"/>
+					<Add directory="/home/saman/CLionProjects/BasicRope/includes/math"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/test/Makefile&quot;  VERBOSE=1 SimpleRope_boost/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/test/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/test/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/saman/CLionProjects/BasicRope/cmake-build-release/test/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/src/MassPoint.cpp">
+			<Option target="SimpleRope"/>
+			<Option target="mesh_library"/>
+			<Option target="SimpleRope_boost"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/src/MassPoint.h">
+			<Option target="SimpleRope"/>
+			<Option target="mesh_library"/>
+			<Option target="SimpleRope_boost"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/src/Point.cpp">
+			<Option target="SimpleRope"/>
+			<Option target="mesh_library"/>
+			<Option target="SimpleRope_boost"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/src/Point.h">
+			<Option target="SimpleRope"/>
+			<Option target="mesh_library"/>
+			<Option target="SimpleRope_boost"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/src/Rope.cpp">
+			<Option target="SimpleRope"/>
+			<Option target="mesh_library"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/src/Rope.h">
+			<Option target="SimpleRope"/>
+			<Option target="mesh_library"/>
+			<Option target="SimpleRope_boost"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/src/RopeManager.cpp">
+			<Option target="SimpleRope"/>
+			<Option target="mesh_library"/>
+			<Option target="SimpleRope_boost"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/src/RopeManager.h">
+			<Option target="SimpleRope"/>
+			<Option target="mesh_library"/>
+			<Option target="SimpleRope_boost"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/src/SpringElement.cpp">
+			<Option target="SimpleRope"/>
+			<Option target="mesh_library"/>
+			<Option target="SimpleRope_boost"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/src/SpringElement.h">
+			<Option target="SimpleRope"/>
+			<Option target="mesh_library"/>
+			<Option target="SimpleRope_boost"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/src/main.cpp">
+			<Option target="SimpleRope"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/test/tests.cpp">
+			<Option target="SimpleRope_boost"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/cmake/FindSUNDIALS.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\test\"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/../../../../usr/lib/x86_64-linux-gnu/cmake/BoostDetectToolset-1.71.0.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/../../../../usr/lib/x86_64-linux-gnu/cmake/Boost-1.71.0/BoostConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Boost-1.71.0\"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/../../../../usr/lib/x86_64-linux-gnu/cmake/Boost-1.71.0/BoostConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Boost-1.71.0\"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/../../../../usr/lib/x86_64-linux-gnu/cmake/boost_headers-1.71.0/boost_headers-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\boost_headers-1.71.0\"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/../../../../usr/lib/x86_64-linux-gnu/cmake/boost_headers-1.71.0/boost_headers-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\boost_headers-1.71.0\"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/../../../../usr/lib/x86_64-linux-gnu/cmake/boost_unit_test_framework-1.71.0/boost_unit_test_framework-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\boost_unit_test_framework-1.71.0\"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/../../../../usr/lib/x86_64-linux-gnu/cmake/boost_unit_test_framework-1.71.0/boost_unit_test_framework-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\boost_unit_test_framework-1.71.0\"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/../../../../usr/lib/x86_64-linux-gnu/cmake/boost_unit_test_framework-1.71.0/libboost_unit_test_framework-variant-shared.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\boost_unit_test_framework-1.71.0\"/>
+		</Unit>
+		<Unit filename="/home/saman/CLionProjects/BasicRope/../../../../usr/lib/x86_64-linux-gnu/cmake/boost_unit_test_framework-1.71.0/libboost_unit_test_framework-variant-static.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\boost_unit_test_framework-1.71.0\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

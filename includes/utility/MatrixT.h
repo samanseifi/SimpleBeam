@@ -41,16 +41,21 @@ public:
     /** \name Operators */
     /* Accessors */
     /*@{*/
+    /* Return a the (n_row, n_col) element in a matrix */
     nTYPE& operator()(int n_row, int n_col);
     const nTYPE& operator()(int n_row, int n_col) const;
+
+    /* return a pointer a column in the matrix */
+    nTYPE* operator()(int ncol);
+    const nTYPE* operator()(int ncol) const;
 
     /* Assignments */
     MatrixT<nTYPE>& operator=(const nTYPE& valRHS);
     MatrixT<nTYPE>& operator=(const MatrixT<nTYPE>& matRHS);
     /*@}*/
 
-    /** Determinent of the Matrix */
-
+    /** Transpose of the Matrix */
+    MatrixT<nTYPE>& Transpose(const MatrixT<nTYPE>& matrix);
 
     /** Matrix inversion */
 
@@ -144,6 +149,19 @@ inline const nTYPE& MatrixT<nTYPE>::operator()(int n_row, int n_col) const {
     return (this->fArray[n_col*fRows + n_row]);
 }
 
+/* returns a pointer to the top of the specified column */
+template<class nTYPE>
+inline nTYPE* MatrixT<nTYPE>::operator()(int ncol) {
+
+    return(this->fArray + ncol*fRows);
+}
+
+template<class nTYPE>
+inline const nTYPE* MatrixT<nTYPE>::operator()(int ncol) const {
+
+    return(this->fArray + ncol*fRows);
+}
+
 template<class nTYPE>
 inline MatrixT<nTYPE>& MatrixT<nTYPE>::operator=(const nTYPE& valRHS) {
 
@@ -166,11 +184,22 @@ inline MatrixT<nTYPE>& MatrixT<nTYPE>::operator=(const MatrixT<nTYPE>& matRHS) {
     return (*this);
 }
 
+template<class nTYPE>
+MatrixT<nTYPE> &MatrixT<nTYPE>::Transpose(const MatrixT<nTYPE> &matrix) {
 
+    nTYPE *pThis = this->fArray;
+    nTYPE *pMat  = matrix.fArray;
+    for (int i = 0; i < matrix.fRows; i++)
+    {
+        nTYPE* pmj = pMat++;
+        for (int j = 0; j < matrix.fCols; j++)
+        {
+            *pThis++ = *pmj;
+            pmj += matrix.fRows;
+        }
+    }
+    return (*this);
 
-
-
-
-
+}
 
 #endif //SIMPLEBEAM_MATRIXT_H

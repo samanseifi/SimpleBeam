@@ -1,23 +1,12 @@
 /* Simulating a simple linear beam */
 
-#include "MatrixT.h"
+#include "Mesh.h"
 
 using namespace std;
 
 /* Assigning the weighting for numerical integration */
 void GetWeights(vector<double> &xi, vector<double> &w, int numIP);
 
-/** Functions creating the geometry and mesh information */
-/*@{*/
-/* Calculating total number of nodes with num. of nodes at each element Ne and number of elements L */
-int GetNumNodes(int Ne, int L);
-
-/* Building the array of initial nodal coordinates */
-void GetCoords(VectorT<double> &coords, double Length, double nnodes);
-
-/* Building the connectivity matrix */
-void GetConnectivity(MatrixT<int> &connect, int Ne, int L);
-/*@}*/
 
 
 int main() {
@@ -48,19 +37,19 @@ int main() {
     int nnodes_per_el = 3;
     /*@}*/
 
-    /** Get total # of nodes */
-    int nnodes = GetNumNodes(nnodes_per_el, nel);
+    Mesh mesh_beam(beam_length, nel, nnodes_per_el);
 
     /** Setting up the data structures for the mesh */
     /*@{*/
     /* 1) Building Vector of nodal coordinates */
-    VectorT<double> vecCoords(nnodes);
-    GetCoords(vecCoords, beam_length, nnodes);
+    VectorT<double> vecCoords = mesh_beam.GetCoords();
+
 
     /* 2) Building matrix of element connectivity (specifies node numbers on each element) */
-    MatrixT<int> matConnect(nnodes_per_el, nel);
-    GetConnectivity(matConnect, nnodes_per_el, nel);
+    MatrixT<int> matConnect = mesh_beam.GetConnectivity();
     /*@{*/
+
+    int nnodes = mesh_beam.GetNumNodes();
 
     /* Integration points and weights for 2 point integration */
     /*@{*/
@@ -190,29 +179,4 @@ void GetWeights(vector<double> &xi, vector<double> &w, const int numIP) {
     }
 }
 
-/* Getting the number of nodes for L number of elements and Ne number of nodes per element */
-int GetNumNodes(int Ne, int L) {
-    return (Ne - 1)*L + 1;
-}
 
-/* Getting the vector of nodal coordinates */
-void GetCoords(VectorT<double> &coords, const double Length, const double nnodes) {
-    for (int i = 0; i < nnodes; i++)
-        coords[i] = Length*(i)/(nnodes-1);
-}
-
-/* Connectivity matrix! */
-void GetConnectivity(MatrixT<int> &connect, const int Ne, const int L) {
-    for (int lmn = 0; lmn < L; lmn++) {
-        if (Ne == 3){
-            /* 2n order element with 3 nodes: O----O----O */
-            connect(0, lmn) = 2*lmn;
-            connect(1, lmn) = 2*lmn+1;
-            connect(2, lmn) = 2*lmn+2;
-        } else if (Ne == 2) {
-            /* 1st order element with 2 nodes: O-----O */
-            connect(0, lmn) = lmn;
-            connect(1, lmn) = lmn+1;
-        }
-    }
-}
