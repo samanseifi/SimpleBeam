@@ -1,1 +1,0 @@
-/usr/bin/c++ -Wall -Wextra -O3 -rdynamic CMakeFiles/SimpleBeam.dir/src/main.cpp.o CMakeFiles/SimpleBeam.dir/src/Mesh.cpp.o -o ../bin/SimpleBeam   -L/home/saman/Apps/sundials-5.1.0/instdir/lib  -Wl,-rpath,/home/saman/Apps/sundials-5.1.0/instdir/lib /usr/lib/x86_64-linux-gnu/libgsl.so /usr/lib/x86_64-linux-gnu/libgslcblas.so -lsundials_nvecserial -lsundials_ida -lsundials_kinsol 
