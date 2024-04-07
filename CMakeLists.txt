@@ -26,18 +26,18 @@ else()
 endif()
 
 
-find_package(GSL REQUIRED)
-link_libraries(GSL::gsl GSL::gslcblas)
+# find_package(GSL REQUIRED)
+# link_libraries(GSL::gsl GSL::gslcblas)
 
-# Finding Sundials with FindSUNDIALS.cmake
-find_package(SUNDIALS REQUIRED)
+# # Finding Sundials with FindSUNDIALS.cmake
+# find_package(SUNDIALS REQUIRED)
 
-# Adding Sundials header files to the includes path
-include_directories(${SUNDIALS_INCLUDE_DIR})
+# # Adding Sundials header files to the includes path
+# include_directories(${SUNDIALS_INCLUDE_DIR})
 
-# Adding and linking the Sundials library directory
-link_directories(${SUNDIALS_LIBRARY_DIR})
-link_libraries(${SUNDIALS_LIBRARIES})
+# # Adding and linking the Sundials library directory
+# link_directories(${SUNDIALS_LIBRARY_DIR})
+# link_libraries(${SUNDIALS_LIBRARIES})
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
