@@ -2,11 +2,11 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
+#include <cmath>
 
 extern "C" {
     void dgesv_(int* n, int* nrhs, double* a, int* lda, int* ipiv, double* b, int* ldb, int* info);
 }
-
 
 struct Matrix {
     std::vector<double> data;
@@ -47,14 +47,15 @@ struct Vector {
         data.erase(data.begin() + indexToRemove);
     }
 
-
     int size() const {
         return data.size();
     }
 };
 
 void solveLinearSystem(Matrix& A, Vector& b) {
-    assert(A.rows == A.cols && b.size() == A.rows); // Ensure system is consistent
+    if (A.rows != A.cols || b.size() != A.rows) {
+        throw std::runtime_error("Inconsistent system: Matrix dimensions and vector size do not match.");
+    }
     int n = A.rows, nrhs = 1, lda = n, ldb = n, info;
     std::vector<int> ipiv(n);
 
@@ -67,8 +68,53 @@ void solveLinearSystem(Matrix& A, Vector& b) {
     }
 }
 
+void formStiffnessMatrix(Matrix& stiffnessMatrix, double E, double A, double L, double I) {
+    double C1 = E * A / L;
+    double C2 = E * I / pow(L, 3);
+
+    stiffnessMatrix(0, 0) =  C1; stiffnessMatrix(0, 1) = stiffnessMatrix(0, 2) = 0.0;
+    stiffnessMatrix(0, 3) = -C1; stiffnessMatrix(0, 4) = stiffnessMatrix(0, 5) = 0.0;
+    
+    stiffnessMatrix(1, 0) = 0.0; stiffnessMatrix(1, 1) =  12 * C2; stiffnessMatrix(1, 2) = 6 * C2 * L;
+    stiffnessMatrix(1, 3) = 0.0; stiffnessMatrix(1, 4) = -12 * C2; stiffnessMatrix(1, 5) = 6 * C2 * L;
+
+    stiffnessMatrix(2, 0) = 0.0; stiffnessMatrix(2, 1) =  6 * C2 * L; stiffnessMatrix(2, 2) = 4 * C2 * L*L; 
+    stiffnessMatrix(2, 3) = 0.0; stiffnessMatrix(2, 4) = -6 * C2 * L; stiffnessMatrix(2, 5) = 2 * C2 * L*L;
+
+    stiffnessMatrix(3, 0) = -C1; stiffnessMatrix(3, 1) = stiffnessMatrix(3, 2) = 0.0;
+    stiffnessMatrix(3, 3) =  C1; stiffnessMatrix(3, 4) = stiffnessMatrix(3, 5) = 0.0;
+
+    stiffnessMatrix(4, 0) = 0.0; stiffnessMatrix(4, 1) = -12 * C2; stiffnessMatrix(4, 2) = -6 * C2 * L;
+    stiffnessMatrix(4, 3) = 0.0; stiffnessMatrix(4, 4) =  12 * C2; stiffnessMatrix(4, 5) = -6 * C2 * L;
+
+    stiffnessMatrix(5, 0) = 0.0; stiffnessMatrix(5, 1) =  6 * C2 * L; stiffnessMatrix(5, 2) = 2 * C2 * L*L;
+    stiffnessMatrix(5, 3) = 0.0; stiffnessMatrix(5, 4) = -6 * C2 * L; stiffnessMatrix(5, 5) = 4 * C2 * L*L;
+}
 
 
+void globalStiffnessMatrix(Matrix& globalStiffness, Matrix& stiffnessMatrix, int n_elements, int connectivity[][2]) {
+    for (int i = 0; i < n_elements; i++) {
+        int node1 = connectivity[i][0];
+        int node2 = connectivity[i][1];
+
+        int dof1 = 3 * node1;
+        int dof2 = 3 * node2;
+
+        for (int j = 0; j < 6; j++) {
+            for (int k = 0; k < 6; k++) {
+                if (j < 3 && k < 3) {
+                    globalStiffness(dof1 + j % 3, dof1 + k % 3) += stiffnessMatrix(j, k);
+                } else if (j < 3) {
+                    globalStiffness(dof1 + j % 3, dof2 + k % 3) += stiffnessMatrix(j, k);
+                } else if (k < 3) {
+                    globalStiffness(dof2 + j % 3, dof1 + k % 3) += stiffnessMatrix(j, k);
+                } else {
+                    globalStiffness(dof2 + j % 3, dof2 + k % 3) += stiffnessMatrix(j, k);
+                }
+            }
+        }
+    }
+}
 
 int main() {
 
@@ -77,7 +123,7 @@ int main() {
     // Number of nodes 11
     // Number of DOFs 22
     double L_beam = 10.0;
-    int n_elements = 2;
+    int n_elements = 10;
     int n_nodes = n_elements + 1;
     int n_dofs = 3 * n_nodes;
 
@@ -95,88 +141,18 @@ int main() {
         connectivity[i][1] = i + 1;
     }
 
-
-    
-    double E = 210; // Young's modulus
-    double A = 0.01; // Cross-sectional area
-    double L = 1.0; // Length of the beam element
-    double I = 0.0001; // Moment of inertia
-
-    double C1 = E * A / L;
-    double C2 = E * I / L*L*L;
+    double E = 210e9; // Young's modulus unit Pa
+    double A = 0.01; // Cross-sectional area unit m^2
+    double L = 1.0; // Length of the beam element unit m
+    double I = 0.0001; // Moment of inertia unit m^4
 
     // Create element stiffness
-    Matrix elementStiffness(6, 6);
-
-    elementStiffness(0, 0) = C1;
-    elementStiffness(0, 1) = 0.0;
-    elementStiffness(0, 2) = 0.0;
-    elementStiffness(0, 3) = -C1;
-    elementStiffness(0, 4) = 0.0;
-    elementStiffness(0, 5) = 0.0;
-    
-    elementStiffness(1, 0) = 0.0;
-    elementStiffness(1, 1) = 12 * C2;
-    elementStiffness(1, 2) = 6 * C2 * L;
-    elementStiffness(1, 3) = 0.0;
-    elementStiffness(1, 4) = -12 * C2;
-    elementStiffness(1, 5) = 6 * C2 * L;
-
-    elementStiffness(2, 0) = 0.0;
-    elementStiffness(2, 1) = 6 * C2 * L;
-    elementStiffness(2, 2) = 4 * C2 * L*L;
-    elementStiffness(2, 3) = 0.0;
-    elementStiffness(2, 4) = -6 * C2 * L;
-    elementStiffness(2, 5) = 2 * C2 * L*L;
-
-    elementStiffness(3, 0) = -C1;
-    elementStiffness(3, 1) = 0.0;
-    elementStiffness(3, 2) = 0.0;
-    elementStiffness(3, 3) = C1;
-    elementStiffness(3, 4) = 0.0;
-    elementStiffness(3, 5) = 0.0;
-
-    elementStiffness(4, 0) = 0.0;
-    elementStiffness(4, 1) = -12 * C2;
-    elementStiffness(4, 2) = -6 * C2 * L;
-    elementStiffness(4, 3) = 0.0;
-    elementStiffness(4, 4) = 12 * C2;
-    elementStiffness(4, 5) = -6 * C2 * L;
-
-    elementStiffness(5, 0) = 0.0;
-    elementStiffness(5, 1) = 6 * C2 * L;
-    elementStiffness(5, 2) = 2 * C2 * L*L;
-    elementStiffness(5, 3) = 0.0;
-    elementStiffness(5, 4) = -6 * C2 * L;
-    elementStiffness(5, 5) = 4 * C2 * L*L;
+    Matrix stiffnessMatrix(6, 6);
+    formStiffnessMatrix(stiffnessMatrix, E, A, L, I);
 
     // construct the global stiffness matrix
     Matrix globalStiffness(n_dofs, n_dofs);
-
-    for (int i = 0; i < n_elements; i++) {
-        int node1 = connectivity[i][0];
-        int node2 = connectivity[i][1];
-
-        int dof1 = 3 * node1;
-        int dof2 = 3 * node2;
-
-        for (int j = 0; j < 6; j++) {
-            for (int k = 0; k < 6; k++) {
-                if (j < 3 && k < 3) {
-                    globalStiffness(dof1 + j % 3, dof1 + k % 3) += elementStiffness(j, k);
-                } else if (j < 3) {
-                    globalStiffness(dof1 + j % 3, dof2 + k % 3) += elementStiffness(j, k);
-                } else if (k < 3) {
-                    globalStiffness(dof2 + j % 3, dof1 + k % 3) += elementStiffness(j, k);
-                } else {
-                    globalStiffness(dof2 + j % 3, dof2 + k % 3) += elementStiffness(j, k);
-                }
-            }
-        }
-    }
-
-
-
+    globalStiffnessMatrix(globalStiffness, stiffnessMatrix, n_elements, connectivity);
 
     // create the force vector
     Vector force(n_dofs);
@@ -190,8 +166,6 @@ int main() {
     updatedForces.remove(0);
     updatedForces.remove(0);
 
-    
-
     Matrix updatedStiffness = globalStiffness;
     // Remove cols 0 1 and 2 use removeCol method which is one col at a time
     updatedStiffness.removeCol(0);
@@ -201,15 +175,6 @@ int main() {
     updatedStiffness.removeCol(0);
     updatedStiffness.removeRow(0);
 
-
-
-    // globalStiffness.print();
-    // std::cout << "A=" << std::endl;
-    // updatedStiffness.print();
-    // // force.print();
-    // std::cout << "b=" << std::endl;
-    // updatedForces.print();
-
     solveLinearSystem(updatedStiffness, updatedForces);
 
     std::cout << "Solution of the modified system:\n";
@@ -217,9 +182,20 @@ int main() {
         std::cout << "x[" << i << "] = " << updatedForces[i] << std::endl;
     }
 
-
-
-
+    // plot deforrmed shape for both x and y dofs
+    for (int i = 0; i < n_nodes; i++) {
+        double x = coordinates(i, 0);
+        double y = coordinates(i, 1);
+        double u = 0.0;
+        double v = 0.0;
+        if (i > 0) {
+            u = updatedForces[3 * i - 3];
+            v = updatedForces[3 * i - 2];
+        }
+        std::cout << x + u << " " << y + v << std::endl; // unit m
+    }
+    
+    
 
     return 0;
 }
