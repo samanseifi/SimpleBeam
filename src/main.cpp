@@ -1,182 +1,148 @@
 /* Simulating a simple linear beam */
+#include <iostream>
+#include <cmath>
+#include <algorithm>
+#include "Vector.hpp"
+#include "Element.hpp"
 
-#include "Mesh.h"
+extern "C" {
+    void dgesv_(int* n, int* nrhs, double* a, int* lda, int* ipiv, double* b, int* ldb, int* info);
+}
 
-using namespace std;
+Vector solveLinearSystem(Matrix& A, const Vector& b) {
+    if (A.rows != A.cols || b.size() != A.rows) {
+        throw std::runtime_error("Inconsistent system: Matrix dimensions and vector size do not match.");
+    }
+    int n = A.rows, nrhs = 1, lda = n, ldb = n, info;
+    std::vector<int> ipiv(n);
+    Vector x(n);
 
-/* Assigning the weighting for numerical integration */
-void GetWeights(vector<double> &xi, vector<double> &w, int numIP);
+    std::copy(b.data.begin(), b.data.end(), x.data.begin());
 
+    dgesv_(&n, &nrhs, &A.data[0], &lda, &ipiv[0], &x.data[0], &ldb, &info);
+
+    if (info > 0) {
+        std::cerr << "Solution could not be computed; matrix is singular.\n";
+    } else if (info < 0) {
+        std::cerr << "Argument " << -info << " had an illegal value.\n";
+    }
+
+    return x;
+}
+
+void globalStiffnessMatrix(Matrix& globalStiffness, std::vector<Element> elements, int connectivity[][2]) {
+    for (int i = 0; i < elements.size(); i++) {
+        
+        auto stiffnessMatrix = elements[i].getElementStiffness();
+        
+        int node1 = connectivity[i][0];
+        int node2 = connectivity[i][1];
+
+        int dof1 = 3 * node1;
+        int dof2 = 3 * node2;
+
+        for (int j = 0; j < 6; j++) {
+            for (int k = 0; k < 6; k++) {
+                if (j < 3 && k < 3) {
+                    globalStiffness(dof1 + j % 3, dof1 + k % 3) += stiffnessMatrix(j, k);
+                } else if (j < 3) {
+                    globalStiffness(dof1 + j % 3, dof2 + k % 3) += stiffnessMatrix(j, k);
+                } else if (k < 3) {
+                    globalStiffness(dof2 + j % 3, dof1 + k % 3) += stiffnessMatrix(j, k);
+                } else {
+                    globalStiffness(dof2 + j % 3, dof2 + k % 3) += stiffnessMatrix(j, k);
+                }
+            }
+        }
+    }
+}
 
 
 int main() {
 
-    /** \name Geometry: Area simple bat with a given beam_length and cross section area = Area  */
-    const double beam_length = 5.0;
-    const double Area = 1.0;
-
-    /** \name Material properties
-     *          mu: Shear modulus
-     *          nu: Poisson Ratio
-     **/
-    /*@{*/
-    const double mu = 50.0;
-    const double nu = 0.3;
-    const double cnst = 2.0 * mu * Area * (1 - nu) / (1 - 2 * nu);
-    /*@}*/
-
-    /** \name Defining Loadings */
-    /*@{*/
-    const double bodyforce = 10.0;
-    const double traction = 2.0;
-    /*@}*/
-
-    /** Total # of elements (nel) and # of nodes per element (2 for linear, 3 for quadratic elements) */
-    /*@{*/
-    int nel = 10;
-    int nnodes_per_el = 3;
-    /*@}*/
-
-    Mesh mesh_beam(beam_length, nel, nnodes_per_el);
-
-    /** Setting up the data structures for the mesh */
-    /*@{*/
-    /* 1) Building Vector of nodal coordinates */
-    VectorT<double> vecCoords = mesh_beam.GetCoords();
+    // Beam length 10m
+    // Number of elements 10
+    // Number of nodes 11
+    // Number of DOFs 22
+    double L_beam = 10.0;
+    int n_elements = 10;
+    int n_nodes = n_elements + 1;
+    int n_dofs = 3 * n_nodes;
 
 
-    /* 2) Building matrix of element connectivity (specifies node numbers on each element) */
-    MatrixT<int> matConnect = mesh_beam.GetConnectivity();
-    /*@{*/
+    double E = 210e9; // Young's modulus unit Pa
+    double A = 0.01; // Cross-sectional area unit m^2
+    double L = L_beam / n_elements; // Element length unit m
+    double I = 0.0001; // Moment of inertia unit m^4
 
-    int nnodes = mesh_beam.GetNumNodes();
+    Material material(E, A, I);
 
-    /* Integration points and weights for 2 point integration */
-    /*@{*/
-    int numIP = nnodes_per_el - 1;
-    vector<double> xi(2), w(2);
-    GetWeights(xi, w, numIP);
-    /*@{*/
-
-    /* Assemble the global stiffness and force vector */
-    MatrixT<double> K(nnodes);
-    VectorT<double> F(nnodes);
-
-    /* Loop over elements! */
-    for (int elem = 0; elem < nel; elem++) {
-
-        /* Extract the vecCoords of each node on the current element */
-        MatrixT<double> K_el;
-        K_el.Dimension(nnodes_per_el, nnodes_per_el);
-
-        VectorT<double> F_el;
-        F_el.Dimension(nnodes_per_el);
-
-        /* Extract nodal coordinates of each element */
-        VectorT<double> vecElemCoords;
-        vecElemCoords.Dimension(nnodes_per_el);
-
-        for (int a = 0; a < nnodes_per_el; a++) {
-            vecElemCoords[a] = vecCoords[matConnect(a, elem)];
-        }
-
-        /* Loop over number of integration points for the current element and assemble element stiffness!  */
-        for (int II = 0; II < numIP; II++) {
-
-            /* Compute shape functions and its derivatives: N and dN/dxi at the current integration point */
-            VectorT<double> N;
-            N.Dimension(nnodes_per_el);
-
-            VectorT<double> dNdxi;
-            dNdxi.Dimension(nnodes_per_el);
-
-            /* Element order = number of nodes - 1 */
-            if (nnodes_per_el == 3) {
-                N[0] = -0.5 * xi[II] * (1.0 - xi[II]);
-                N[1] =  0.5 * xi[II] * (1.0 + xi[II]);
-                N[2] =  1.0 - pow(xi[II], 2);
-                dNdxi[0] = -0.5 + xi[II];
-                dNdxi[1] =  0.5 + xi[II];
-                dNdxi[2] = -2.0 * xi[II];
-            } else if (nnodes_per_el == 2) {
-                N[0] = 0.5 * (1.0 - xi[II]);
-                N[1] = 0.5 * (1.0 + xi[II]);
-                dNdxi[0] = -0.5;
-                dNdxi[1] =  0.5;
-            }
-
-            /* Compute dx/dxi, J and dN/dx */
-            double dxdxi = 0.0;
-            for (int a = 0; a < nnodes_per_el; a++) {
-                dxdxi = dxdxi + dNdxi[a] * vecElemCoords[a];
-            }
-            /* Calculate the Jacobian */
-            double J = abs(dxdxi);
-
-            VectorT<double> dNdx;
-            dNdx.Dimension(nnodes_per_el);
-            for (int a = 0; a < nnodes_per_el; a++) {
-                dNdx[a] = dNdxi[a] / dxdxi;
-            }
-
-            /* Add contribution to element stiffness and force vector from current integration pt */
-            for (int a = 0; a < nnodes_per_el; a++) {
-                F_el[a] += w[II] * bodyforce * J * N[a];
-                for (int b = 0; b < nnodes_per_el; b++) {
-                    K_el(a, b) += cnst * w[II] * J * dNdx[a] * dNdx[b];
-                }
-            }
-        }
-
-        /* Add the stiffness and residual from the current element into global matrices */
-        for (int a = 0; a < nnodes_per_el; a++) {
-            int rw = matConnect(a, elem);
-            F[rw] += F_el[a];
-            for (int b = 0; b < nnodes_per_el; b++) {
-                int cl = matConnect(b, elem);
-                K(rw, cl) += K_el(a, b);
-            }
-        }
+    // create Element objects
+    std::vector<Element> elements;
+    for (int i = 0; i < n_elements; i++) {
+        Node n1, n2;
+        n1.x = i * L_beam / n_elements;
+        n1.y = 0.0;
+        n2.x = (i + 1) * L_beam / n_elements;
+        n2.y = 0.0;
+        elements.emplace_back(n1, n2, material);
+    }
+    // get coordinates
+    Matrix coordinates(n_nodes, 2);
+    for (int i = 0; i < n_nodes; i++) {
+        coordinates(i, 0) = i * L_beam / n_elements;
+        coordinates(i, 1) = 0.0;
     }
 
-    /*  Add the extra forcing term from the traction at x=nel */
-    //TODO: It should be generalized to a set of nodes.
-    F[nnodes-1] = F[nnodes-1] + traction;
+    // Mesh connectivity
+    int connectivity[n_elements][2];
+    for (int i = 0; i < n_elements; i++) {
+        connectivity[i][0] = i;
+        connectivity[i][1] = i + 1;
+    }
 
-    /**
-     * Modify FEM equations to enforce displacement boundary condition
-     * To do this we simply replace the equation for the first node with u=0
-     **/
-     //TODO: This also should be generalized to a set of nodes.
-    for (int a = 0; a < nnodes; a++)
-        K(0, a) = 0.0;
+    // construct the global stiffness matrix
+    Matrix globalStiffness(n_dofs, n_dofs);
+    globalStiffnessMatrix(globalStiffness, elements, connectivity);
 
-    // K(0,0) = 1 means when it is multiplied by the
-    K(0, 0) = 1.0;
-    F[0] = 0.0;
-    K.Print();
+    // create the force vector
+    Vector force(n_dofs);
+
+    // add vertical load at final node
+    force[3 * n_nodes - 2] = -1.0;
+
+    // remove corresponding force elements to known displacements
+    Vector updatedForces = force;
+    updatedForces.remove({0, 1, 2});
+
+    Matrix updatedStiffness = globalStiffness;
+    updatedStiffness.removeCols({0, 1, 2});
+    updatedStiffness.removeRows({0, 1, 2});
 
 
+    auto updatedDisplacements = solveLinearSystem(updatedStiffness, updatedForces);
 
-    /* Solving the linear system */
+    std::cout << "Solution of the modified system:\n";
+    for (int i = 0; i < updatedDisplacements.size(); ++i) {
+        std::cout << "x[" << i << "] = " << updatedDisplacements[i] << std::endl;
+    }
 
-
-    //SolveLinear(sol, K, F);
+    // plot deforrmed shape for both x and y dofs
+    for (int i = 0; i < n_nodes; i++) {
+        double x = coordinates(i, 0);
+        double y = coordinates(i, 1);
+        double u = 0.0;
+        double v = 0.0;
+        if (i > 0) {
+            u = updatedDisplacements[3 * i - 3];
+            v = updatedDisplacements[3 * i - 2];
+        }
+        std::cout << x + u << " " << y + v << std::endl; // unit m
+    }
+    
+    
 
     return 0;
-}
-
-/* Getting the weights for numerical integration */
-void GetWeights(vector<double> &xi, vector<double> &w, const int numIP) {
-    if (numIP == 2) {
-        w[0] = w[1] = 1.0;
-        xi[0] = -0.5773502692;
-        xi[1] =  0.5773502692;
-    } else if (numIP == 1) {
-        w[0] = 2.0;
-        w[1] = 0.0;
-        xi[0] = xi[1] = 0.0;
-    }
 }
 
 
