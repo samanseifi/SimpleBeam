@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <fstream>
+
 #include "Vector.hpp"
 #include "Element.hpp"
 
@@ -127,19 +129,24 @@ int main() {
         std::cout << "x[" << i << "] = " << updatedDisplacements[i] << std::endl;
     }
 
-    // plot deforrmed shape for both x and y dofs
+    // write undefromed and deformed solutions in a file
+    std::ofstream file("../output/results.txt");
+
+    // write undeformed solution
     for (int i = 0; i < n_nodes; i++) {
-        double x = coordinates(i, 0);
-        double y = coordinates(i, 1);
-        double u = 0.0;
-        double v = 0.0;
-        if (i > 0) {
-            u = updatedDisplacements[3 * i - 3];
-            v = updatedDisplacements[3 * i - 2];
-        }
-        std::cout << x + u << " " << y + v << std::endl; // unit m
+        file << coordinates(i, 0) << " " << coordinates(i, 1) << " " << coordinates(i, 2) << std::endl;
     }
-    
+
+    // write deformed solution
+    for (int i = 0; i < n_nodes; i++) {
+        if (i == 0) {
+            file << coordinates(i, 0) << " " << 0.0 << " " << 0.0 << std::endl;
+        } else {
+            file << coordinates(i, 0) << " " << updatedDisplacements[3 * (i-1)] << " " << updatedDisplacements[3 * (i-1) + 1] << std::endl;
+        }
+    }
+
+    file.close();
     
 
     return 0;
