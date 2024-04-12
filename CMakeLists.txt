@@ -30,7 +30,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 
 include_directories(includes/utility)
 
-add_executable(${BINARY_NAME} src/main.cpp)
+add_executable(${BINARY_NAME} src/main.cpp src/Matrix.hpp src/Vector.hpp src/Node.hpp src/Material.hpp src/Element.cpp)
 
 # Link BLAS and LAPACK libraries
 # target_link_libraries(${BINARY_NAME} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})

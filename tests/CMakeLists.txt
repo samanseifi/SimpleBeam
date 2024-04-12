@@ -1,7 +1,7 @@
 # Assuming GoogleTest has already been made available in the main CMakeLists.txt
 
 # Create a test executable target from tests.cpp
-add_executable(tests tests.cpp)
+add_executable(tests tests_main.cpp test_vector.cpp test_matrix.cpp)
 
 # Link GoogleTest libraries to the new target
 target_link_libraries(tests gtest_main)

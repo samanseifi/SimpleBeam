@@ -1,99 +1,40 @@
 /* Simulating a simple linear beam */
 #include <iostream>
-#include <vector>
-#include <cassert>
 #include <cmath>
+#include <algorithm>
+#include "Vector.hpp"
+#include "Element.hpp"
 
 extern "C" {
     void dgesv_(int* n, int* nrhs, double* a, int* lda, int* ipiv, double* b, int* ldb, int* info);
 }
 
-struct Matrix {
-    std::vector<double> data;
-    int rows, cols;
-
-    Matrix(int m, int n) : data(m * n), rows(m), cols(n) {}
-
-    double& operator()(int i, int j) {
-        return data[i * cols + j];
-    }
-
-    void removeRow(int rowToRemove) {
-        assert(rowToRemove < rows);
-        data.erase(data.begin() + rowToRemove * cols, data.begin() + (rowToRemove + 1) * cols);
-        --rows;
-    }
-
-    void removeCol(int colToRemove) {
-        assert(colToRemove < cols);
-        for (int i = rows - 1; i >= 0; --i) {
-            data.erase(data.begin() + i * cols + colToRemove);
-        }
-        --cols;
-    }
-};
-
-struct Vector {
-    std::vector<double> data;
-
-    explicit Vector(int n) : data(n) {}
-
-    double& operator[](int i) {
-        return data[i];
-    }
-
-    void remove(int indexToRemove) {
-        assert(indexToRemove >= 0 && static_cast<size_t>(indexToRemove) < data.size());
-        data.erase(data.begin() + indexToRemove);
-    }
-
-    int size() const {
-        return data.size();
-    }
-};
-
-void solveLinearSystem(Matrix& A, Vector& b) {
+Vector solveLinearSystem(Matrix& A, const Vector& b) {
     if (A.rows != A.cols || b.size() != A.rows) {
         throw std::runtime_error("Inconsistent system: Matrix dimensions and vector size do not match.");
     }
     int n = A.rows, nrhs = 1, lda = n, ldb = n, info;
     std::vector<int> ipiv(n);
+    Vector x(n);
 
-    dgesv_(&n, &nrhs, &A.data[0], &lda, &ipiv[0], &b.data[0], &ldb, &info);
+    std::copy(b.data.begin(), b.data.end(), x.data.begin());
+
+    dgesv_(&n, &nrhs, &A.data[0], &lda, &ipiv[0], &x.data[0], &ldb, &info);
 
     if (info > 0) {
         std::cerr << "Solution could not be computed; matrix is singular.\n";
     } else if (info < 0) {
         std::cerr << "Argument " << -info << " had an illegal value.\n";
     }
+
+    return x;
 }
 
-void formStiffnessMatrix(Matrix& stiffnessMatrix, double E, double A, double L, double I) {
-    double C1 = E * A / L;
-    double C2 = E * I / pow(L, 3);
-
-    stiffnessMatrix(0, 0) =  C1; stiffnessMatrix(0, 1) = stiffnessMatrix(0, 2) = 0.0;
-    stiffnessMatrix(0, 3) = -C1; stiffnessMatrix(0, 4) = stiffnessMatrix(0, 5) = 0.0;
-    
-    stiffnessMatrix(1, 0) = 0.0; stiffnessMatrix(1, 1) =  12 * C2; stiffnessMatrix(1, 2) = 6 * C2 * L;
-    stiffnessMatrix(1, 3) = 0.0; stiffnessMatrix(1, 4) = -12 * C2; stiffnessMatrix(1, 5) = 6 * C2 * L;
-
-    stiffnessMatrix(2, 0) = 0.0; stiffnessMatrix(2, 1) =  6 * C2 * L; stiffnessMatrix(2, 2) = 4 * C2 * L*L; 
-    stiffnessMatrix(2, 3) = 0.0; stiffnessMatrix(2, 4) = -6 * C2 * L; stiffnessMatrix(2, 5) = 2 * C2 * L*L;
-
-    stiffnessMatrix(3, 0) = -C1; stiffnessMatrix(3, 1) = stiffnessMatrix(3, 2) = 0.0;
-    stiffnessMatrix(3, 3) =  C1; stiffnessMatrix(3, 4) = stiffnessMatrix(3, 5) = 0.0;
-
-    stiffnessMatrix(4, 0) = 0.0; stiffnessMatrix(4, 1) = -12 * C2; stiffnessMatrix(4, 2) = -6 * C2 * L;
-    stiffnessMatrix(4, 3) = 0.0; stiffnessMatrix(4, 4) =  12 * C2; stiffnessMatrix(4, 5) = -6 * C2 * L;
-
-    stiffnessMatrix(5, 0) = 0.0; stiffnessMatrix(5, 1) =  6 * C2 * L; stiffnessMatrix(5, 2) = 2 * C2 * L*L;
-    stiffnessMatrix(5, 3) = 0.0; stiffnessMatrix(5, 4) = -6 * C2 * L; stiffnessMatrix(5, 5) = 4 * C2 * L*L;
-}
-
-
-void globalStiffnessMatrix(Matrix& globalStiffness, Matrix& stiffnessMatrix, int n_elements, int connectivity[][2]) {
-    for (int i = 0; i < n_elements; i++) {
+void globalStiffnessMatrix(Matrix& globalStiffness, std::vector<Element> elements, int connectivity[][2]) {
+    for (int i = 0; i < elements.size(); i++) {
+        
+        auto stiffnessMatrix = elements[i].getElementStiffness();
+        
         int node1 = connectivity[i][0];
         int node2 = connectivity[i][1];
 
@@ -116,6 +57,7 @@ void globalStiffnessMatrix(Matrix& globalStiffness, Matrix& stiffnessMatrix, int
     }
 }
 
+
 int main() {
 
     // Beam length 10m
@@ -127,7 +69,25 @@ int main() {
     int n_nodes = n_elements + 1;
     int n_dofs = 3 * n_nodes;
 
-    // create the nodal coordinates
+
+    double E = 210e9; // Young's modulus unit Pa
+    double A = 0.01; // Cross-sectional area unit m^2
+    double L = L_beam / n_elements; // Element length unit m
+    double I = 0.0001; // Moment of inertia unit m^4
+
+    Material material(E, A, I);
+
+    // create Element objects
+    std::vector<Element> elements;
+    for (int i = 0; i < n_elements; i++) {
+        Node n1, n2;
+        n1.x = i * L_beam / n_elements;
+        n1.y = 0.0;
+        n2.x = (i + 1) * L_beam / n_elements;
+        n2.y = 0.0;
+        elements.emplace_back(n1, n2, material);
+    }
+    // get coordinates
     Matrix coordinates(n_nodes, 2);
     for (int i = 0; i < n_nodes; i++) {
         coordinates(i, 0) = i * L_beam / n_elements;
@@ -141,18 +101,9 @@ int main() {
         connectivity[i][1] = i + 1;
     }
 
-    double E = 210e9; // Young's modulus unit Pa
-    double A = 0.01; // Cross-sectional area unit m^2
-    double L = 1.0; // Length of the beam element unit m
-    double I = 0.0001; // Moment of inertia unit m^4
-
-    // Create element stiffness
-    Matrix stiffnessMatrix(6, 6);
-    formStiffnessMatrix(stiffnessMatrix, E, A, L, I);
-
     // construct the global stiffness matrix
     Matrix globalStiffness(n_dofs, n_dofs);
-    globalStiffnessMatrix(globalStiffness, stiffnessMatrix, n_elements, connectivity);
+    globalStiffnessMatrix(globalStiffness, elements, connectivity);
 
     // create the force vector
     Vector force(n_dofs);
@@ -162,24 +113,18 @@ int main() {
 
     // remove corresponding force elements to known displacements
     Vector updatedForces = force;
-    updatedForces.remove(0);
-    updatedForces.remove(0);
-    updatedForces.remove(0);
+    updatedForces.remove({0, 1, 2});
 
     Matrix updatedStiffness = globalStiffness;
-    // Remove cols 0 1 and 2 use removeCol method which is one col at a time
-    updatedStiffness.removeCol(0);
-    updatedStiffness.removeRow(0);
-    updatedStiffness.removeCol(0);
-    updatedStiffness.removeRow(0);
-    updatedStiffness.removeCol(0);
-    updatedStiffness.removeRow(0);
+    updatedStiffness.removeCols({0, 1, 2});
+    updatedStiffness.removeRows({0, 1, 2});
 
-    solveLinearSystem(updatedStiffness, updatedForces);
+
+    auto updatedDisplacements = solveLinearSystem(updatedStiffness, updatedForces);
 
     std::cout << "Solution of the modified system:\n";
-    for (int i = 0; i < updatedForces.size(); ++i) {
-        std::cout << "x[" << i << "] = " << updatedForces[i] << std::endl;
+    for (int i = 0; i < updatedDisplacements.size(); ++i) {
+        std::cout << "x[" << i << "] = " << updatedDisplacements[i] << std::endl;
     }
 
     // plot deforrmed shape for both x and y dofs
@@ -189,8 +134,8 @@ int main() {
         double u = 0.0;
         double v = 0.0;
         if (i > 0) {
-            u = updatedForces[3 * i - 3];
-            v = updatedForces[3 * i - 2];
+            u = updatedDisplacements[3 * i - 3];
+            v = updatedDisplacements[3 * i - 2];
         }
         std::cout << x + u << " " << y + v << std::endl; // unit m
     }
